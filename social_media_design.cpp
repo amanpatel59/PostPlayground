@@ -2,11 +2,88 @@
 
 using namespace std;
 
+
+
 class Post{
 private:
-
+    string content;
+    string privacy;
+    unordered_set<string>tags;
+    unordered_set<string>mentions;
 public:
+    Post(string content) : content(content) , privacy("public") {}
+
+    void setPrivacy(string newPrivacySettings){
+        privacy = newPrivacySettings;
+    }
+
+    string getPrivacy(){
+        return this->privacy;
+    }
+
+    void addTag(string taggedUser){
+        tags.insert(taggedUser);
+    }
+
+    void addMention(string mentionedUser){
+        mentions.insert(mentionedUser);
+    }
+
+    void showPostDetails(){
+        cout<<"Post : "<<content<<" (Privacy : "<<privacy<<")"<<endl;
+        if(!tags.empty()){
+            cout<<"Tagged people : ";
+            for(auto person : tags)cout<<person<<" ";
+            cout<<endl;
+        }
+        if(!mentions.empty()){
+            cout<<"Mentions : ";
+            for(auto person : mentions)cout<<person<<" ";
+            cout<<endl;
+        }
+    }
 };
+
+
+class SimplePost : public Post{
+public:
+    SimplePost(string& content) : Post(content) {}
+};
+
+
+class Comment : public Post{
+private:
+    vector<Post*>replies;
+public:
+    Comment(string content) : Post(content) {}
+
+    void addReply(Post* reply){
+        replies.push_back(reply);
+    }
+
+    void show(){
+        Post::showPostDetails();
+        for(auto reply : replies)reply->showPostDetails();
+    }
+};
+
+
+class PostFactory{
+public:
+    static Post* createPost(string type , string content){
+        if(type == "simple"){
+            SimplePost* posting = new SimplePost(content);
+            return posting;
+        }
+        else if(type == "comment"){
+            Comment* posting = new Comment(content);
+            return posting;
+        }
+        return nullptr;
+    }
+};
+
+
 
 class User{
 private:
@@ -16,13 +93,19 @@ private:
     unordered_set<string>notifications;
 public:
     User(string name) : name(name) {}
+
     void follow(User* toFollow){
         // NEED TO CHECK THIS
         toFollow->followers.push_back(this);
         toFollow->notifications.insert(this->name+" started following");
     }
 
+    // NEED TO COMPLETE
     void makePost(string& postContent , string& privacySettings){}
+
+    void notifyFollowers(){
+        for(auto follower : followers)notifications.insert("new noti");
+    }
 
     void showNotifications() {
         if(this->notifications.size() == 0)cout<<"No New Notifications"<<endl;
@@ -34,6 +117,10 @@ public:
 
     void showProfile() {
         cout<<"Your userName : "<<name<<endl;
+    }
+
+    string getProfile(){
+        return this->name;
     }
 };
 
