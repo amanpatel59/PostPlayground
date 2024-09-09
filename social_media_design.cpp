@@ -3,222 +3,268 @@
 using namespace std;
 
 
+// Forward declaration
+class User;
+class Post;
 
-class Post{
+class Post {
 private:
     string content;
     string privacy;
-    unordered_set<string>tags;
-    unordered_set<string>mentions;
+    unordered_set<string> tags;
+    unordered_set<string> mentions;
+    User* creator;  // Pointer to the User who created the post
 public:
-    Post(string content) : content(content) , privacy("public") {}
+    Post(string content, User* creator) : content(content), privacy("public"), creator(creator) {}
 
-    void setPrivacy(string newPrivacySettings){
+    void setPrivacy(string newPrivacySettings) {
         privacy = newPrivacySettings;
     }
 
-    string getPrivacy(){
+    string getPrivacy() {
         return this->privacy;
     }
 
-    void addTag(string taggedUser){
+    void addTag(string taggedUser) {
         tags.insert(taggedUser);
     }
 
-    void addMention(string mentionedUser){
+    void addMention(string mentionedUser) {
         mentions.insert(mentionedUser);
     }
 
-    void showPostDetails(){
-        cout<<"Post : "<<content<<" (Privacy : "<<privacy<<")"<<endl;
-        if(!tags.empty()){
-            cout<<"Tagged people : ";
-            for(auto person : tags)cout<<person<<" ";
-            cout<<endl;
+    void showPostDetails() {
+        cout << "Post : " << content << " (Privacy : " << privacy << ")" << endl;
+        
+        if (!tags.empty()) {
+            cout << "Tagged people : ";
+            for (auto person : tags) cout << person << " ";
+            cout << endl;
         }
-        if(!mentions.empty()){
-            cout<<"Mentions : ";
-            for(auto person : mentions)cout<<person<<" ";
-            cout<<endl;
+        if (!mentions.empty()) {
+            cout << "Mentions : ";
+            for (auto person : mentions) cout << person << " ";
+            cout << endl;
         }
+    }
+
+    User* getCreator() const {
+        return creator;
     }
 };
 
-
-class SimplePost : public Post{
+class GlobalFeed {
+private:
+    static unordered_set<Post*> generalGlobalFeed;
 public:
-    SimplePost(string& content) : Post(content) {}
+    static void newGlobalPost(Post* post) {
+        generalGlobalFeed.insert(post);
+    }
+
+    static void showGlobalFeed() {
+        for (auto post : generalGlobalFeed) post->showPostDetails();
+    }
 };
 
+// Define the static member
+unordered_set<Post*> GlobalFeed::generalGlobalFeed;
 
-class Comment : public Post{
-private:
-    vector<Post*>replies;
+class SimplePost : public Post {
 public:
-    Comment(string content) : Post(content) {}
+    SimplePost(string& content, User* creator) : Post(content, creator) {}
+};
 
-    void addReply(Post* reply){
+class Comment : public Post {
+private:
+    vector<Post*> replies;
+public:
+    Comment(string content, User* creator) : Post(content, creator) {}
+
+    void addReply(Post* reply) {
         replies.push_back(reply);
     }
 
-    void show(){
+    void show() {
         Post::showPostDetails();
-        for(auto reply : replies)reply->showPostDetails();
+        for (auto reply : replies) reply->showPostDetails();
     }
 };
 
-
-class PostFactory{
+class PostFactory {
 public:
-    static Post* createPost(string type , string content){
-        if(type == "simple"){
-            SimplePost* posting = new SimplePost(content);
-            return posting;
-        }
-        else if(type == "comment"){
-            Comment* posting = new Comment(content);
-            return posting;
+    static Post* createPost(string type, string content, User* creator) {
+        if (type == "simple") {
+            return new SimplePost(content, creator);
+        } else if (type == "comment") {
+            return new Comment(content, creator);
         }
         return nullptr;
     }
 };
 
-
-
-class User{
+class User {
 private:
     string name;
-    vector<User*>followers;
-    vector<Post*>posts;
-    unordered_set<string>notifications;
+    vector<User*> followers;
+    vector<Post*> posts;
+    unordered_set<string> notifications;
+    unordered_set<Post*> userFeed;
 public:
     User(string name) : name(name) {}
 
-    void follow(User* toFollow){
-        // NEED TO CHECK THIS
+    void follow(User* toFollow) {
         toFollow->followers.push_back(this);
-        toFollow->notifications.insert(this->name+" started following");
+        toFollow->notifications.insert(this->name + " started following");
     }
 
-    // NEED TO COMPLETE
-    void makePost(string& postContent , string& privacySettings){}
+    void makePost(string& postContent, string& privacySettings) {
+        Post* newPost = PostFactory::createPost("simple", postContent, this);
+        newPost->showPostDetails();
+        this->posts.push_back(newPost);
+        notifyFollowersRegardingPost();
+        pushPostToFollowerFeed(newPost);
+        if (privacySettings == "public") GlobalFeed::newGlobalPost(newPost);
+    }
 
-    void notifyFollowers(){
-        for(auto follower : followers)notifications.insert("new noti");
+    void pushPostToFollowerFeed(Post* newPost) {
+        for (auto follower : followers) {
+            follower->userFeed.insert(newPost);
+        }
+    }
+
+    void showFeed() {
+        for (auto post : userFeed) {
+            post->showPostDetails();
+        }
+    }
+
+    void notifyFollowersRegardingPost() {
+        for (auto follower : followers) {
+            follower->notifications.insert(this->name + " just posted an update");
+        }
     }
 
     void showNotifications() {
-        if(this->notifications.size() == 0)cout<<"No New Notifications"<<endl;
-        for(auto notification : notifications){
-            cout<<notification<<endl;
+        if (this->notifications.size() == 0) cout << "No New Notifications" << endl;
+        for (auto notification : notifications) {
+            cout << notification << endl;
         }
         notifications.clear();
     }
 
     void showProfile() {
-        cout<<"Your userName : "<<name<<endl;
+        cout << "Your userName : " << name << endl;
     }
 
-    string getProfile(){
+    string getProfile() {
         return this->name;
     }
 };
 
-int main(){
-    // session manager
-
-    unordered_map<string,User*>allUsers;
+int main() {
+    unordered_map<string, User*> allUsers;
     User* user1 = new User("alice");
     User* user2 = new User("bob");
     allUsers["alice"] = user1;
     allUsers["bob"] = user2;
     string command;
-    while(true){
-        cout<<"Available Commands"<<endl;
-        cout<<"1. Follow"<<endl;
-        cout<<"2. Post Update"<<endl;
-        cout<<"3. Show Notifiacation"<<endl;
-        cout<<"4. Show Profile"<<endl;
-        cout<<"5. Send Message"<<endl;
-        cout<<"6. Exit"<<endl;
-        cin>>command;
+    while (true) {
+        cout << endl << endl;
+        cout << "Available Commands" << endl;
+        cout << "1. Follow" << endl;
+        cout << "2. Post Update" << endl;
+        cout << "3. Show Notification" << endl;
+        cout << "4. Show Profile" << endl;
+        cout << "5. Access Global Feed" << endl;
+        cout << "6. Access Specific User Feed" << endl;
+        cout << "7. Send Message" << endl;
+        cout << "8. Exit" << endl;
+        cout << endl << endl;
+        cin >> command;
         int commandNumber = stoi(command);
         switch (commandNumber) {
             case 1: {
-                // Follow
                 string follower, followee;
                 cout << "Enter follower Name: ";
                 cin >> follower;
                 cout << "Enter followee Name: ";
                 cin >> followee;
-
-                // Checking if given users exist or not
+                cout << endl;
                 if (allUsers.find(follower) != allUsers.end() && allUsers.find(followee) != allUsers.end()) {
                     allUsers[follower]->follow(allUsers[followee]);
                     cout << follower << " started following " << followee << endl;
                 } else {
                     cout << "User/Users not found" << endl;
                 }
-                break;  // Important to end this case
+                break;
             }
             case 2: {
                 string userName, postContent, privacySettings;
                 cout << "Enter user's name: ";
                 cin >> userName;
                 cout << "Enter post content: ";
-                cin.ignore();  // To ignore the newline character left in the buffer
+                cin.ignore();
                 getline(cin, postContent);
                 cout << "Enter privacy setting (public/friends): ";
                 cin >> privacySettings;
+                cout << endl;
 
-                // Checking if the given user exists
                 if (allUsers.find(userName) != allUsers.end()) {
                     allUsers[userName]->makePost(postContent, privacySettings);
                     cout << userName << " just posted" << endl;
                 } else {
                     cout << "User not found" << endl;
                 }
-                break;  // Important to end this case
+                break;
             }
             case 3: {
-                // Show Notifications
                 string userName;
                 cout << "Enter user's name: ";
                 cin >> userName;
+                cout << endl;
 
-                // Checking if the given user exists
                 if (allUsers.find(userName) != allUsers.end()) {
                     allUsers[userName]->showNotifications();
                 } else {
                     cout << "User not found" << endl;
                 }
-                break;  // Important to end this case
+                break;
             }
             case 4: {
-                // Show Profile
                 string userName;
                 cout << "Enter user's name: ";
                 cin >> userName;
+                cout << endl;
 
-                // Checking if the given user exists
                 if (allUsers.find(userName) != allUsers.end()) {
                     allUsers[userName]->showProfile();
                 } else {
                     cout << "User not found" << endl;
                 }
-                break;  // Important to end this case
+                break;
             }
             case 5: {
-                // Send Message
-                // Implementation needed
-                break;  // Important to end this case
+                cout << endl;
+                GlobalFeed::showGlobalFeed();
+                break;
+            }
+            case 6: {
+                cout << "Enter user name : ";
+                string userName;
+                cin >> userName;
+
+                if (allUsers.find(userName) != allUsers.end()) {
+                    allUsers[userName]->showFeed();
+                } else {
+                    cout << "User not found" << endl;
+                }
+                break;
             }
             default: {
                 cout << "Invalid command" << endl;
-                break;  // Optional: Handle invalid commands
+                break;
             }
         }
-         
     }
     return 0;
 }
