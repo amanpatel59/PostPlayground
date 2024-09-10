@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Post::Post(string content, User* creator, string currentPostId) : content(content),privacy("public"),creator(creator),postId(currentPostId){}
+Post::Post(string content, User* creator, string currentPostId) : content(content),privacy("public"),creator(creator),postId(currentPostId),likes(0){}
 
 string Post::getContent(){
     return this->content;
@@ -55,3 +55,10 @@ void Post::setPostId(){
     this->postId = creator->getProfile()+to_string(creator->getNumberOfPosts()+1);
 }
 
+void Post::setLikes(int newCountOfLikes){
+    this->likes = newCountOfLikes;
+}
+
+int Post::getLikes(){
+    return this->likes; 
+}

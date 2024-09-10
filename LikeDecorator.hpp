@@ -6,7 +6,7 @@ using namespace std;
 
 class LikeDecorator : virtual public PostDecorator{
 private:
-    int likes = 0;
+    Post* currentPost;
 public:
     LikeDecorator(Post* currentPost);
     void like();

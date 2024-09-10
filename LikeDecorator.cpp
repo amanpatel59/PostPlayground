@@ -3,13 +3,13 @@
 
 using namespace std;
 
-LikeDecorator::LikeDecorator(Post* currentPost) : PostDecorator(currentPost) {}
+LikeDecorator::LikeDecorator(Post* currentPost) : PostDecorator(currentPost) , currentPost(currentPost) {}
 
 void LikeDecorator::like(){
-    this->likes++;
+    currentPost->setLikes(currentPost->getLikes()+1);
 }
 
 void LikeDecorator::showPostDetails(){
     // PostDecorator::showPostDetails();
-    cout<<"Likes : "<<this->likes<<endl;
+    cout<<"Likes : "<<currentPost->getLikes()<<endl;
 }
