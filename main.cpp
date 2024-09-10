@@ -7,6 +7,9 @@
 #include "Comment.hpp"
 #include "PostFactory.hpp"
 #include "GlobalFeed.hpp"
+#include "Post.hpp"
+#include "LikeDecorator.hpp"
+#include "CommentDecorator.hpp"
 
 using namespace std;
 
@@ -16,7 +19,7 @@ int main() {
     User* user2 = new User("bob");
     allUsers["alice"] = user1;
     allUsers["bob"] = user2;
-
+    
     string command;
     while (true) {
         cout << endl << endl;
@@ -27,8 +30,10 @@ int main() {
         cout << "4. Show Profile" << endl;
         cout << "5. Access Global Feed" << endl;
         cout << "6. Access Specific User Feed" << endl;
-        cout << "7. Send Message" << endl;
-        cout << "8. Exit" << endl;
+        cout << "7. Like a Post" << endl;
+        cout << "8. Comment on a Post" << endl;
+        cout << "9. Send Message" << endl;
+        cout << "10. Exit" << endl;
         cout << endl << endl;
         cin >> command;
         int commandNumber = stoi(command);
@@ -112,10 +117,33 @@ int main() {
             }
             case 7: {
                 // You may implement the "Send Message" functionality here if needed
-                cout << "Send Message functionality not implemented yet." << endl;
+                cout<<"Enter user name who wants to like : ";
+                string userName;
+                cin>>userName;
+                cout<<"Enter Post Id : ";
+                string postId;
+                cin>>postId;
+                cout<<"Enter Post Type : ";
+                string postType;
+                cin>>postType;
+                if (allUsers.find(userName) != allUsers.end()) {
+                    allUsers[userName]->likePost(postId,postType);
+                } else {
+                    cout << "User not found" << endl;
+                }
                 break;
             }
             case 8: {
+                // Exit the program
+                cout << "Exiting..." << endl;
+                return 0;
+            }
+            case 9: {
+                // You may implement the "Send Message" functionality here if needed
+                cout << "Send Message functionality not implemented yet." << endl;
+                break;
+            }
+            case 10: {
                 // Exit the program
                 cout << "Exiting..." << endl;
                 return 0;

@@ -10,7 +10,7 @@ class Comment : public Post {
 private:
     vector<Post*> replies;
 public:
-    Comment(string content, User* creator);
+    Comment(string content, User* creator,string postId);
     void addReply(Post* reply);
     void show();
 };

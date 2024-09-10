@@ -2,8 +2,7 @@
 
 using namespace std;
 
-Comment::Comment(string content, User* creator)
-    : Post(content, creator) {}
+Comment::Comment(string content, User* creator,string postId) : Post(content, creator,postId) {}
 
 void Comment::addReply(Post* reply) {
     replies.push_back(reply);

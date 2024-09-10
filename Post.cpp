@@ -4,8 +4,11 @@
 
 using namespace std;
 
-Post::Post(string content, User* creator)
-    : content(content), privacy("public"), creator(creator) {}
+Post::Post(string content, User* creator, string currentPostId) : content(content),privacy("public"),creator(creator),postId(currentPostId){}
+
+string Post::getContent(){
+    return this->content;
+}
 
 void Post::setPrivacy(string newPrivacySettings) {
     privacy = newPrivacySettings;
@@ -26,7 +29,7 @@ void Post::addMention(string mentionedUser) {
 void Post::showPostDetails() {
     cout<<endl;
     cout << "Post : " << content << " (Privacy : " << privacy << ")" << endl;
-    cout<<"Posted By : "<<creator->getProfile()<<endl<<endl;
+    cout<<"Posted By : "<<creator->getProfile()<<endl;
     if (!tags.empty()) {
         cout << "Tagged people : ";
         for (const auto& person : tags) cout << person << " ";
@@ -37,8 +40,18 @@ void Post::showPostDetails() {
         for (const auto& person : mentions) cout << person << " ";
         cout << endl;
     }
+    cout<<"Post Id : "<<getPostId()<<endl<<"shou"<<endl;
 }
 
-User* Post::getCreator() const {
+User* Post::getCreator() {
     return creator;
 }
+
+string Post::getPostId(){
+    return this->postId;
+}
+
+void Post::setPostId(){
+    this->postId = creator->getProfile()+to_string(creator->getNumberOfPosts()+1);
+}
+

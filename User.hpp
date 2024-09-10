@@ -25,6 +25,9 @@ public:
     void notifyFollowersRegardingPost();
     void showNotifications();
     void showProfile();
+    void likePost(string currentPostId, string postType);
+    void commentPost(string currentPostId, string postType, string commentToPost);
+    int getNumberOfPosts();
     string getProfile();
 };
 

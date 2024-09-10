@@ -12,6 +12,7 @@ private:
 public:
     static void newGlobalPost(Post* post);
     static void showGlobalFeed();
+    static Post* getPost(string postId);
 };
 
 #endif // GLOBALFEED_HPP

@@ -3,7 +3,8 @@
 #include "Post.hpp"
 #include "PostFactory.hpp"
 #include "GlobalFeed.hpp"
-#include <iostream>
+#include "PostFacade.hpp"
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -15,7 +16,9 @@ void User::follow(User* toFollow) {
 }
 
 void User::makePost(string& postContent, string& privacySettings) {
-    Post* newPost = PostFactory::createPost("simple", postContent, this);
+    string postId = this->name+to_string(posts.size()+1);
+    Post* newPost = PostFactory::createPost("simple", postContent, this, postId);
+    newPost->setPostId();
     newPost->showPostDetails();
     posts.push_back(newPost);
     notifyFollowersRegardingPost();
@@ -31,7 +34,8 @@ void User::pushPostToFollowerFeed(Post* newPost) {
 
 void User::showFeed() {
     for (const auto& post : userFeed) {
-        post->showPostDetails();
+        PostFacade* postFacade = new PostFacade(post);
+        postFacade->showPostDetails();
     }
 }
 
@@ -51,6 +55,44 @@ void User::showNotifications() {
 
 void User::showProfile() {
     cout << "Your userName : " << name << endl;
+}
+
+void User::likePost(string currentPostId, string postType){
+    // transform(postType.begin(), postType.end(), postType.begin(), toLower);
+    if(postType == "public"){
+        Post* currentPost = GlobalFeed::getPost(currentPostId);
+        LikeDecorator* decorateCurrentPost = new LikeDecorator(currentPost);
+        decorateCurrentPost->like();
+    }
+    else{
+        for(auto post : userFeed){
+            if(currentPostId == post->getPostId()){
+                LikeDecorator* decorateCurrentPost = new LikeDecorator(post);
+                decorateCurrentPost->like();
+            }
+        }
+    }
+}
+
+void User::commentPost(string currentPostId, string postType , string commentToPost){
+    // transform(postType.begin(), postType.end(), postType.begin(), toLower);
+    if(postType == "public"){
+        Post* currentPost = GlobalFeed::getPost(currentPostId);
+        CommentDecorator* decorateCurrentPost = new CommentDecorator(currentPost);
+        decorateCurrentPost->addComment(commentToPost);
+    }
+    else{
+        for(auto post : userFeed){
+            if(currentPostId == post->getPostId()){
+                CommentDecorator* decorateCurrentPost = new CommentDecorator(post);
+                decorateCurrentPost->addComment(commentToPost);
+            }
+        }
+    }
+}
+
+int User::getNumberOfPosts(){
+    return this->posts.size();
 }
 
 string User::getProfile() {
