@@ -116,15 +116,12 @@ int main() {
                 break;
             }
             case 7: {
-                // You may implement the "Send Message" functionality here if needed
+                string userName , postId , postType;
                 cout<<"Enter user name who wants to like : ";
-                string userName;
                 cin>>userName;
                 cout<<"Enter Post Id : ";
-                string postId;
                 cin>>postId;
-                cout<<"Enter Post Type : ";
-                string postType;
+                cout<<"Enter Post Type (public/friends) : ";
                 cin>>postType;
                 if (allUsers.find(userName) != allUsers.end()) {
                     allUsers[userName]->likePost(postId,postType);
@@ -134,9 +131,22 @@ int main() {
                 break;
             }
             case 8: {
-                // Exit the program
-                cout << "Exiting..." << endl;
-                return 0;
+                string userName , postId , postType , comment;
+                cout<<"Enter user name who wants to comment : ";
+                cin>>userName;
+                cout<<"Enter Post Id : ";
+                cin>>postId;
+                cout<<"Enter Post Type (public/friends) : ";
+                cin>>postType;
+                cout<<"Enter the comment : ";
+                cin.ignore();
+                getline(cin, comment);
+                if (allUsers.find(userName) != allUsers.end()) {
+                    allUsers[userName]->commentPost(postId,postType,comment);
+                } else {
+                    cout << "User not found" << endl;
+                }
+                break;
             }
             case 9: {
                 // You may implement the "Send Message" functionality here if needed
@@ -154,6 +164,8 @@ int main() {
             }
         }
     }
+
+    cout<<"Post : "<<sizeof(Post)<<" ,user : "<<sizeof(User)<<endl;
 
     return 0;
 }

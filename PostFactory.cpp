@@ -2,11 +2,11 @@
 
 using namespace std;
 
-Post* PostFactory::createPost(string type, string content, User* creator,string postId) {
+Post* PostFactory::createPost(string type, string content,string privacy, User* creator,string postId) {
     if (type == "simple") {
-        return new SimplePost(content, creator,postId);
+        return new SimplePost(content,privacy,creator,postId);
     } else if (type == "comment") {
-        return new Comment(content, creator,postId);
+        return new Comment(content,privacy, creator,postId);
     }
     return nullptr;
 }

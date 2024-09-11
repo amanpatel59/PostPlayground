@@ -7,7 +7,7 @@ using namespace std;
 
 class SimplePost : public Post {
 public:
-    SimplePost(string& content, User* creator,string postId="");
+    SimplePost(string& content,string privacy, User* creator,string postId="");
 };
 
 #endif // SIMPLEPOST_HPP

@@ -9,7 +9,7 @@ using namespace std;
 
 class PostFactory {
 public:
-    static Post* createPost(string type, string content, User* creator,string postId);
+    static Post* createPost(string type, string content,string privacy, User* creator,string postId);
 };
 
 #endif // POSTFACTORY_HPP

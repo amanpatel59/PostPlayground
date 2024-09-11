@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Post::Post(string content, User* creator, string currentPostId) : content(content),privacy("public"),creator(creator),postId(currentPostId),likes(0){}
+Post::Post(string content,string privacy, User* creator, string currentPostId) : content(content),privacy(privacy),creator(creator),postId(currentPostId){}
 
 string Post::getContent(){
     return this->content;
@@ -40,7 +40,7 @@ void Post::showPostDetails() {
         for (const auto& person : mentions) cout << person << " ";
         cout << endl;
     }
-    cout<<"Post Id : "<<getPostId()<<endl<<"shou"<<endl;
+    cout<<"Post Id : "<<getPostId()<<endl;
 }
 
 User* Post::getCreator() {
@@ -55,10 +55,18 @@ void Post::setPostId(){
     this->postId = creator->getProfile()+to_string(creator->getNumberOfPosts()+1);
 }
 
-void Post::setLikes(int newCountOfLikes){
-    this->likes = newCountOfLikes;
+void Post::setLikes(unordered_set<string> newLikeList){
+    this->likes = newLikeList;
 }
 
-int Post::getLikes(){
+unordered_set<string> Post::getLikes(){
     return this->likes; 
+}
+
+unordered_set<string> Post::getComments(){
+    return this->comments;
+}
+
+void Post::setComments(unordered_set<string> newCommentList){
+    this->comments = newCommentList;
 }

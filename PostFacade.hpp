@@ -8,6 +8,8 @@ using namespace std;
 #include "CommentDecorator.hpp"
 
 class PostFacade : public LikeDecorator , CommentDecorator{
+private:
+    string userWhoInitiated;
 public:
     PostFacade(Post* currentPost);
 

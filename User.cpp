@@ -1,4 +1,3 @@
-
 #include "User.hpp"
 #include "Post.hpp"
 #include "PostFactory.hpp"
@@ -17,7 +16,7 @@ void User::follow(User* toFollow) {
 
 void User::makePost(string& postContent, string& privacySettings) {
     string postId = this->name+to_string(posts.size()+1);
-    Post* newPost = PostFactory::createPost("simple", postContent, this, postId);
+    Post* newPost = PostFactory::createPost("simple", postContent,privacySettings, this, postId);
     newPost->setPostId();
     newPost->showPostDetails();
     posts.push_back(newPost);
@@ -61,16 +60,23 @@ void User::likePost(string currentPostId, string postType){
     // transform(postType.begin(), postType.end(), postType.begin(), toLower);
     if(postType == "public"){
         Post* currentPost = GlobalFeed::getPost(currentPostId);
+        if(currentPost == nullptr){
+            cout<<"No such Post Exists"<<endl;
+            return;
+        }
         LikeDecorator* decorateCurrentPost = new LikeDecorator(currentPost);
-        decorateCurrentPost->like();
+        decorateCurrentPost->like(this->name);
     }
     else{
         for(auto post : userFeed){
             if(currentPostId == post->getPostId()){
                 LikeDecorator* decorateCurrentPost = new LikeDecorator(post);
-                decorateCurrentPost->like();
+                decorateCurrentPost->like(this->name);
+                return;
             }
         }
+        cout<<"No such Post Exists"<<endl;
+        return;
     }
 }
 
@@ -78,6 +84,10 @@ void User::commentPost(string currentPostId, string postType , string commentToP
     // transform(postType.begin(), postType.end(), postType.begin(), toLower);
     if(postType == "public"){
         Post* currentPost = GlobalFeed::getPost(currentPostId);
+        if(currentPost == nullptr){
+            cout<<"No such Post Exists"<<endl;
+            return;
+        }
         CommentDecorator* decorateCurrentPost = new CommentDecorator(currentPost);
         decorateCurrentPost->addComment(commentToPost);
     }
@@ -88,6 +98,8 @@ void User::commentPost(string currentPostId, string postType , string commentToP
                 decorateCurrentPost->addComment(commentToPost);
             }
         }
+        cout<<"No such Post Exists"<<endl;
+        return;
     }
 }
 

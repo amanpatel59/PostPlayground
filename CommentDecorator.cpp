@@ -5,18 +5,22 @@
 
 using namespace std;
 
-CommentDecorator::CommentDecorator(Post* currentPost) : PostDecorator(currentPost) {}
+CommentDecorator::CommentDecorator(Post* currentPost) : PostDecorator(currentPost) , currentPost(currentPost) {}
 
 void CommentDecorator::addComment(string comment){
-    this->comments.insert(comment);
+    unordered_set<string> currentComments = currentPost->getComments();
+    currentComments.insert(comment);
+    currentPost->setComments(currentComments);
+    cout<<endl<<"You just added a Comment"<<endl;
 }
 
 void CommentDecorator::showPostDetails(){
     // Call the base class's showPostDetails method to include the base post's details
     // PostDecorator::showPostDetails();
-    if(comments.size() == 0)return;
+    unordered_set<string> currentComments = currentPost->getComments();
+    if(currentComments.size() == 0)return;
     cout<<"comments : "<<endl;
-    for(auto comment : comments){
-        cout<<comment<<endl;
+    for(auto comment : currentComments){
+        cout<<"     "<<comment<<endl;
     }
 }

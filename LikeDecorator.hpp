@@ -9,7 +9,8 @@ private:
     Post* currentPost;
 public:
     LikeDecorator(Post* currentPost);
-    void like();
+    void like(string userWhoInitialized);
+    void unlike(unordered_set<string>&currentLikes , string userWhoInitialized);
     virtual void showPostDetails();
 };
 

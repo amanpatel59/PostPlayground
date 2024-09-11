@@ -9,7 +9,7 @@ using namespace std;
 
 class CommentDecorator : virtual public PostDecorator{
 private:
-    unordered_set<string>comments;
+    Post* currentPost;
 public:
     CommentDecorator(Post* currentPost);
     void addComment(string comment);

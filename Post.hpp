@@ -15,10 +15,10 @@ private:
     unordered_set<string> tags;
     unordered_set<string> mentions;
     User* creator;  // Pointer to the User who created the post
-    int likes;
+    unordered_set<string> likes;
     unordered_set<string>comments;
 public:
-    Post(string content, User* creator , string currentPostId); // constructor (not initialized just declared)
+    Post(string content,string privacy, User* creator , string currentPostId); // constructor (not initialized just declared)
     
     string getContent();
     void setPrivacy(string newPrivacySettings);
@@ -29,8 +29,10 @@ public:
     User* getCreator();
     string getPostId();
     void setPostId();
-    void setLikes(int newCountOfLikes);
-    int getLikes();
+    void setLikes(unordered_set<string> newLikeList);
+    unordered_set<string> getLikes();
+    void setComments(unordered_set<string> newCommentList);
+    unordered_set<string> getComments();
 };
 
 #endif // POST_HPP

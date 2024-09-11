@@ -2,4 +2,4 @@
 
 using namespace std;
 
-SimplePost::SimplePost(string& content, User* creator , string postId) : Post(content, creator,postId) {}
+SimplePost::SimplePost(string& content,string privacy, User* creator , string postId) : Post(content,privacy,creator,postId) {}
