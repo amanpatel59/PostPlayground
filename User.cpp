@@ -10,7 +10,7 @@ using namespace std;
 User::User(string name) : name(name) {}
 
 void User::follow(User* toFollow) {
-    toFollow->followers.push_back(this);
+    toFollow->followers.insert(this);
     toFollow->notifications.insert(name + " started following");
 }
 
@@ -20,7 +20,7 @@ void User::makePost(string& postContent, string& privacySettings) {
     newPost->setPostId();
     newPost->showPostDetails();
     posts.push_back(newPost);
-    notifyFollowersRegardingPost();
+    Observer::notifyFollowers(this);
     pushPostToFollowerFeed(newPost);
     if (privacySettings == "public") GlobalFeed::newGlobalPost(newPost);
 }
@@ -32,17 +32,18 @@ void User::pushPostToFollowerFeed(Post* newPost) {
 }
 
 void User::showFeed() {
+    if(userFeed.size() == 0){
+        cout<<endl<<"========= nothing here ========="<<endl;
+        return;
+    }
+    cout<<endl<<"========= user feed ========="<<endl;
     for (const auto& post : userFeed) {
         PostFacade* postFacade = new PostFacade(post);
         postFacade->showPostDetails();
     }
+    cout<<endl<<"============================="<<endl;
 }
 
-void User::notifyFollowersRegardingPost() {
-    for (const auto& follower : followers) {
-        follower->notifications.insert(name + " just posted an update");
-    }
-}
 
 void User::showNotifications() {
     if (notifications.size() == 0) cout << "No New Notifications" << endl;
@@ -65,13 +66,15 @@ void User::likePost(string currentPostId, string postType){
             return;
         }
         LikeDecorator* decorateCurrentPost = new LikeDecorator(currentPost);
-        decorateCurrentPost->like(this->name);
+        decorateCurrentPost->like(this);
+        Observer::notifyCreator(this,currentPost,"liked");
     }
     else{
         for(auto post : userFeed){
             if(currentPostId == post->getPostId()){
                 LikeDecorator* decorateCurrentPost = new LikeDecorator(post);
-                decorateCurrentPost->like(this->name);
+                decorateCurrentPost->like(this);
+                Observer::notifyCreator(this,post,"liked");
                 return;
             }
         }
@@ -90,12 +93,14 @@ void User::commentPost(string currentPostId, string postType , string commentToP
         }
         CommentDecorator* decorateCurrentPost = new CommentDecorator(currentPost);
         decorateCurrentPost->addComment(commentToPost);
+        Observer::notifyCreator(this,currentPost,"commented "+commentToPost);
     }
     else{
         for(auto post : userFeed){
             if(currentPostId == post->getPostId()){
                 CommentDecorator* decorateCurrentPost = new CommentDecorator(post);
                 decorateCurrentPost->addComment(commentToPost);
+                Observer::notifyCreator(this,post,"commented "+commentToPost);
             }
         }
         cout<<"No such Post Exists"<<endl;
@@ -109,4 +114,16 @@ int User::getNumberOfPosts(){
 
 string User::getProfile() {
     return name;
+}
+
+unordered_set<User*> User::getFollowers(){
+    return this->followers;
+}
+
+unordered_set<string> User::getNotifications(){
+    return this->notifications;
+}
+
+void User::setNotifications(unordered_set<string> updatedNotifications){
+    this->notifications = updatedNotifications;
 }

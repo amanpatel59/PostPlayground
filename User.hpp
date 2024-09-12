@@ -3,15 +3,16 @@
 
 #include <string>
 #include <vector>
-#include <unordered_set>
+#include <bits/stdc++.h>
 #include "Post.hpp"
+#include "Observer.hpp"
 
 using namespace std;
 
 class User {
 private:
     string name;
-    vector<User*> followers;
+    unordered_set<User*> followers;
     vector<Post*> posts;
     unordered_set<string> notifications;
     unordered_set<Post*> userFeed;
@@ -29,6 +30,9 @@ public:
     void commentPost(string currentPostId, string postType, string commentToPost);
     int getNumberOfPosts();
     string getProfile();
+    unordered_set<User*> getFollowers();
+    unordered_set<string> getNotifications();
+    void setNotifications(unordered_set<string> updatedNotifications);
 };
 
 #endif // USER_HPP

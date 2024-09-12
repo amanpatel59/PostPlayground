@@ -10,10 +10,12 @@ void GlobalFeed::newGlobalPost(Post* post) {
 }
 
 void GlobalFeed::showGlobalFeed() {
+    cout<<"============= Global feed ============="<<endl;
     for (const auto& post : generalGlobalFeed){
         PostFacade* postFacade = new PostFacade(post);
         postFacade->showPostDetails();
     }
+    cout<<"======================================="<<endl;
 }
 
 
