@@ -127,3 +127,37 @@ unordered_set<string> User::getNotifications(){
 void User::setNotifications(unordered_set<string> updatedNotifications){
     this->notifications = updatedNotifications;
 }
+
+bool User::isFollower(User* toCheck){
+    if(this->followers.find(toCheck) == this->followers.end())return false;
+    return true;
+}
+
+void User::sendMessage(User* receiver,string message){
+    this->messageStorage[receiver].push_back(message);
+    string blankDenotion = "!)&*#%(";
+    receiver->messageStorage[this].push_back(blankDenotion);
+}
+
+void User::showMessageHistory(User* sender , User* receiver){
+    vector<string>senderSide = sender->messageStorage[receiver];
+    vector<string>receiverSide = receiver->messageStorage[sender];
+    string blankDenotion = "!)&*#%(";
+    for(int index = 0 ; index < senderSide.size() ; index++){
+        if(senderSide[index] == blankDenotion){
+            cout<<endl<<receiverSide[index]<<endl;
+        }
+        else{
+            cout<<"                          "<<senderSide[index]<<endl;
+        }
+    }
+    return;
+}
+
+void User::setMessageHistory(User* sender , User* receiver , vector<string>&messages){
+    sender->messageStorage[receiver] = messages;
+}
+
+vector<string> User::getMessageHistory(User* sender , User* receiver){
+    return sender->messageStorage[receiver];
+}

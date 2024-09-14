@@ -149,8 +149,29 @@ int main() {
                 break;
             }
             case 9: {
-                // You may implement the "Send Message" functionality here if needed
-                cout << "Send Message functionality not implemented yet." << endl;
+                // Send Message
+                string sender , receiver , message;
+                cout<<"Enter who wants to send the message : ";
+                cin>>sender;
+                cout<<"Enter to whom you want to send message : ";
+                cin>>receiver;
+                if(allUsers.find(sender) == allUsers.end() or allUsers.find(receiver) == allUsers.end()){
+                    cout<<"User/Users not found"<<endl;
+                }
+                else if(allUsers[sender]->isFollower(allUsers[receiver]) == 0 or allUsers[receiver]->isFollower(allUsers[sender]) == 0){
+                    cout<<"sender and receiver must follow each other for exchanging messages"<<endl;
+                }
+                else{
+                    cout<<"Enter the message you want to send : ";
+                    cin.ignore();
+                    getline(cin,message);
+                    // cout<<"message send !"<<endl;
+
+                    cout<<endl<<"=================================="<<endl;
+                    allUsers[sender]->sendMessage(allUsers[receiver],message);
+                    allUsers[sender]->showMessageHistory(allUsers[sender],allUsers[receiver]);
+                    cout<<endl<<"=================================="<<endl;
+                }
                 break;
             }
             case 10: {
@@ -164,8 +185,6 @@ int main() {
             }
         }
     }
-
-    cout<<"Post : "<<sizeof(Post)<<" ,user : "<<sizeof(User)<<endl;
 
     return 0;
 }

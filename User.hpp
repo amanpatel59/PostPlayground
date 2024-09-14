@@ -16,6 +16,7 @@ private:
     vector<Post*> posts;
     unordered_set<string> notifications;
     unordered_set<Post*> userFeed;
+    unordered_map<User*,vector<string>>messageStorage;
 public:
     User(string name);
 
@@ -33,6 +34,11 @@ public:
     unordered_set<User*> getFollowers();
     unordered_set<string> getNotifications();
     void setNotifications(unordered_set<string> updatedNotifications);
+    bool isFollower(User* toCheck);
+    void sendMessage(User* receiver,string message);
+    void showMessageHistory(User* sender, User* receiver);
+    void setMessageHistory(User* sender, User* receiver, vector<string>&messages);
+    vector<string> getMessageHistory(User* sender, User* receiver);
 };
 
 #endif // USER_HPP
